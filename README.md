@@ -1,16 +1,20 @@
-# React + Vite
+# NOIR — Café for Two
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Shareable Vite + React concept website with a real-time 3D scene (three.js via @react-three/fiber).
 
-Currently, two official plugins are available:
+A romantic, light café: sage and cream linen, bottle green and apricot, sunlight through a lace curtain, a gold-rimmed porcelain cup, rose petals and a candle. A copper gooseneck kettle pours into the cup on the first screen; scrolling through "The pour" draws a latte-art heart, and the menu swaps the drink in 3D.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Code map:
+- `src/App.jsx` — page content and the scroll state that drives the scene
+- `src/scene/CoffeeScene.jsx` — cup, kettle pour, glass, latte-art shader, steam, candle, petals, lighting, camera rig
+- `src/scene/stage.js` — shared scroll/drink state and drink colours
 
-## React Compiler
+## Run it
+1. Install Node.js.
+2. Extract this ZIP.
+3. Open a terminal in the extracted `noir-cafe-share` folder.
+4. Run `npm install`
+5. Run `npm run dev`
+6. Open the local URL shown in the terminal, usually http://localhost:5173.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Images and fonts load from the internet. Update placeholder address/contact information before using this as a real business site.
