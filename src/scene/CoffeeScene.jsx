@@ -394,7 +394,7 @@ const ICE = [[-0.14, 0.8, 0.05, 0.3], [0.13, 0.84, -0.1, 1.1], [0.03, 0.78, 0.17
 // ---------- the scene ----------------------------------------------------------
 
 const KEYS = [
-  { az: 0.82, el: 0.3, dist: 8.2, ty: 0.85 }, // hero: three-quarter view, room above for the kettle
+  { az: 0.82, el: 0.3, dist: 7.1, ty: 0.85 }, // hero: three-quarter view, room above for the kettle
   { az: 0.0, el: 1.5, dist: 5.2, ty: 0.68 }, // the pour: straight down into the cup
   { az: -0.6, el: 0.32, dist: 6.6, ty: 0.5 }, // menu
 ];

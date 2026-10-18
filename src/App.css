@@ -54,7 +54,8 @@ h2 { font-size: clamp(40px, 5vw, 78px); line-height: 1; letter-spacing: -0.01em;
 .hero h1 .line > span { display: block; }
 .lede { max-width: 30em; font-size: 18px; line-height: 1.65; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
-.hero-stage { height: min(78svh, 760px); }
+.hero-stage { height: min(80svh, 780px); margin-left: -13vw; }
+@media (min-width: 901px) and (max-width: 1200px) { .hero-stage { margin-left: -20vw; } }
 .scroll-hint { position: absolute; left: var(--gutter); bottom: 30px; display: flex; align-items: center; gap: 10px; font-family: var(--body); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
 .scroll-hint svg { animation: nudge 2.4s ease-in-out infinite; }
 @keyframes nudge { 50% { transform: translateY(4px); } }
@@ -168,7 +169,7 @@ h2 { font-size: clamp(40px, 5vw, 78px); line-height: 1; letter-spacing: -0.01em;
   .hero h1 { font-size: clamp(48px, 14vw, 82px); margin: 16px 0 20px; }
   .lede { font-size: 16px; }
   .hero-actions { margin-top: 24px; }
-  .hero-stage { height: 50svh; margin-top: -2svh; }
+  .hero-stage { height: 44svh; margin-top: 0; margin-left: -16vw; }
   .scroll-hint { bottom: 22px; }
 
   .weekly-special { grid-template-columns: 1fr auto; gap: 18px 24px; padding-top: 24px; padding-bottom: 24px; }
