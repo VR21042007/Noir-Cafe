@@ -1,8 +1,9 @@
 import { Component, Suspense, lazy, useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUpRight, Menu, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Menu, ShoppingBag, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { stage } from "./scene/stage";
+import workingPhoto from "./assets/noir-cafe-working.png";
 import "./App.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -11,6 +12,10 @@ const CoffeeScene = lazy(() => import("./scene/CoffeeScene.jsx"));
 
 const roomPhoto = "https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=2000&q=80";
 const visitPhoto = "https://images.unsplash.com/photo-1559496417-e7f25cb247f3?auto=format&fit=crop&w=1400&q=80";
+const roomSlides = [
+  { src: roomPhoto, alt: "A quiet café table by a sunlit window, set with coffee and a potted rose" },
+  { src: workingPhoto, alt: "Two friends sharing coffee and working on laptops at a café table" },
+];
 
 const steps = [
   { name: "Grind", detail: "18 g of Chikmagalur single origin, ground to order." },
@@ -25,7 +30,7 @@ const drinks = [
   { name: "Golden Cold Brew", note: "Steeped for 18 hours, served over clear ice.", specs: ["300 ml", "18 h steep", "over ice"], price: "₹240" },
 ];
 
-const navLinks = [["#story", "The pour"], ["#menu", "Menu"], ["#room", "The room"], ["#visit", "Visit"]];
+const navLinks = [["#home", "Home"], ["#menu", "Menu"], ["#menu", "Shop"], ["#visit", "Our locations"], ["#room", "About us"]];
 
 class SceneBoundary extends Component {
   state = { failed: false };
@@ -43,7 +48,11 @@ function App() {
   const [drink, setDrink] = useState(0);
   const [step, setStep] = useState(-1);
   const [sceneActive, setSceneActive] = useState(true);
+  const [roomSlide, setRoomSlide] = useState(0);
+  const [roomHovered, setRoomHovered] = useState(false);
+  const [roomPaused, setRoomPaused] = useState(false);
   const progressRef = useRef(null);
+
 
   useEffect(() => { stage.drink = drink; }, [drink]);
 
@@ -58,6 +67,16 @@ function App() {
 
     const update = () => {
       frame = 0;
+      const measureAnchor = (el) => {
+        if (!el) return null;
+        const rect = el.getBoundingClientRect();
+        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, h: Math.max(rect.height, 1) };
+      };
+      stage.anchorFrames = {
+        hero: measureAnchor(heroStage.current),
+        story: measureAnchor(storyStage.current),
+        menu: measureAnchor(menuStage.current),
+      };
       const y = window.scrollY;
       const vh = window.innerHeight;
       const storyTop = story.getBoundingClientRect().top + y;
@@ -112,6 +131,12 @@ function App() {
     return () => mm.revert();
   }, []);
 
+  useEffect(() => {
+    if (roomHovered || roomPaused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(() => setRoomSlide((current) => (current + 1) % roomSlides.length), 6500);
+    return () => window.clearInterval(timer);
+  }, [roomHovered, roomPaused]);
+
 
   return (
     <div className="page">
@@ -127,8 +152,14 @@ function App() {
 
       <header className="nav">
         <a className="wordmark" href="#home" aria-label="NOIR, back to top">NOIR</a>
+        <span className="nav-tagline">A café for two</span>
         <nav id="site-nav" className={menuOpen ? "nav-links open" : "nav-links"} aria-label="Main">
-          {navLinks.map(([href, label]) => <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>)}
+          {navLinks.map(([href, label]) => (
+            <a key={label} className={label === "Shop" ? "nav-shop-link" : undefined} href={href} onClick={() => setMenuOpen(false)}>
+              {label === "Shop" && <ShoppingBag size={15} strokeWidth={1.7} aria-hidden="true" />}
+              {label}
+            </a>
+          ))}
         </nav>
         <a className="nav-book" href="#visit">Book a table</a>
         <button className="nav-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} aria-controls="site-nav">
@@ -139,13 +170,12 @@ function App() {
       <main>
         <section className="hero" id="home">
           <div className="hero-copy">
-            <p className="kicker fade-in">Café · Hyderabad · 8 am – 11 pm</p>
+            <p className="kicker hero-eyebrow fade-in">A café for two</p>
             <h1>
-              <span className="line"><span>Two cups.</span></span>
-              <span className="line"><span>One table.</span></span>
-              <span className="line"><span><em>No hurry.</em></span></span>
+              <span className="line"><span>A slower kind</span></span>
+              <span className="line"><span>of coffee.</span></span>
             </h1>
-            <p className="lede fade-in">A small café for first dates, old friends, and long afternoons that turn into evenings. Candles go on every table at sunset.</p>
+            <p className="lede fade-in">Made for good coffee and unhurried moments.</p>
             <div className="hero-actions fade-in">
               <a className="btn btn-solid" href="#menu">See the menu <ArrowRight size={16} /></a>
               <a className="btn btn-line" href="#visit">Book a table for two</a>
@@ -153,6 +183,22 @@ function App() {
           </div>
           <div className="stage-anchor hero-stage" ref={heroStage} />
           <a className="scroll-hint fade-in" href="#story"><ArrowDown size={15} /> Scroll to watch the pour</a>
+        </section>
+
+        <section className="weekly-special" aria-labelledby="weekly-special-title">
+          <div className="weekly-special-label">
+            <span className="kicker">This week at NOIR</span>
+            <span className="weekly-special-rule" aria-hidden="true" />
+          </div>
+          <div className="weekly-special-copy">
+            <p className="weekly-special-eyebrow">Chef’s special</p>
+            <h2 id="weekly-special-title">Rose Cardamom Latte</h2>
+            <p>Espresso with rose and green cardamom, finished with dried petals.</p>
+          </div>
+          <div className="weekly-special-action">
+            <span className="weekly-special-price">₹260</span>
+            <a href="#menu">Explore the menu <ArrowRight size={15} /></a>
+          </div>
         </section>
 
         <section className="story" id="story" aria-labelledby="story-title">
@@ -199,12 +245,14 @@ function App() {
         </section>
 
         <section className="room" id="room" aria-labelledby="room-title">
-          <figure className="room-photo">
-            <img src={roomPhoto} alt="A small table for two by a sunny window, set with a coffee press and a potted rose" loading="lazy" />
+          <figure className="room-photo" onMouseEnter={() => setRoomHovered(true)} onMouseLeave={() => setRoomHovered(false)}>
+            {roomSlides.map((slide, index) => (
+              <img key={slide.src} className={index === roomSlide ? "is-active" : ""} src={slide.src} alt={slide.alt} loading="lazy" />
+            ))}
             <div className="lace" />
           </figure>
           <div className="room-copy reveal">
-            <p className="kicker">The room</p>
+            <p className="kicker">About us</p>
             <h2 id="room-title">Small tables, soft light, and a window seat for two.</h2>
             <p>Twenty-two seats, fresh flowers every Friday, and a corner by the window where the afternoon sun comes through lace curtains. Stay as long as the conversation does.</p>
           </div>
@@ -212,7 +260,7 @@ function App() {
 
         <section className="visit" id="visit" aria-labelledby="visit-title">
           <div className="visit-copy reveal">
-            <p className="kicker">Visit</p>
+            <p className="kicker">Our locations</p>
             <h2 id="visit-title">Your table for two is waiting.</h2>
             <dl className="facts">
               <div><dt>Open</dt><dd className="mono">Every day, 08:00 – 23:00</dd></div>

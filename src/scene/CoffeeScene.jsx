@@ -179,6 +179,69 @@ function useLaceTexture() {
   }, []);
 }
 
+function useBrandTexture() {
+  return useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1024;
+    canvas.height = 256;
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#ffffff";
+    context.font = "600 170px Georgia, serif";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText("N O I R", canvas.width / 2, canvas.height / 2);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = 4;
+    return texture;
+  }, []);
+}
+
+function useBrandLetterTextures() {
+  return useMemo(() => Array.from("NOIR", (letter) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 256;
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#ffffff";
+    context.font = "600 190px Georgia, serif";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(letter, canvas.width / 2, canvas.height / 2);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = 4;
+    return texture;
+  }), []);
+}
+
+function BrandMark({ texture, color, position, rotationY = 0, size }) {
+  return (
+    <mesh position={position} rotation-y={rotationY} renderOrder={2}>
+      <planeGeometry args={size} />
+      <meshBasicMaterial map={texture} color={color} transparent depthWrite={false} toneMapped={false} />
+    </mesh>
+  );
+}
+
+function CupBrandMark({ textures }) {
+  return textures.map((texture, index) => {
+    const angle = 0.82 + (index - 1.5) * 0.22;
+    const radius = 0.535;
+    return (
+      <BrandMark
+        key={index}
+        texture={texture}
+        color="#3d463f"
+        position={[Math.sin(angle) * radius, 0.43, Math.cos(angle) * radius]}
+        rotationY={angle}
+        size={[0.13, 0.13]}
+      />
+    );
+  });
+}
+
 function useLatteMaterial() {
   const uniforms = useMemo(() => ({
     uTime: { value: 0 }, uPour: { value: 0 }, uArt: { value: 1 }, uDust: { value: 0 }, uRipple: { value: 0 },
@@ -259,7 +322,7 @@ function Petals() {
 }
 
 // Gooseneck kettle. The outer group sits exactly at the spout tip, so tilting it pours from a fixed point.
-function Kettle({ kettle, tilt }) {
+function Kettle({ kettle, tilt, brandTexture }) {
   const geo = useMemo(() => ({ body: lathe(KETTLE_PROFILE, 72), spout: tube(SPOUT, 0.032), handle: tube(HANDLE, 0.045) }), []);
   const [tx, ty] = SPOUT_TIP;
   return (
@@ -268,6 +331,10 @@ function Kettle({ kettle, tilt }) {
         <group position={[-tx * KETTLE_SCALE, -ty * KETTLE_SCALE, 0]} scale={KETTLE_SCALE}>
           <mesh geometry={geo.body} castShadow>
             <meshStandardMaterial color="#d99468" metalness={0.9} roughness={0.28} />
+          </mesh>
+          <mesh position-y={0.19} rotation-x={Math.PI / 2} castShadow>
+            <torusGeometry args={[0.455, 0.012, 8, 72]} />
+            <meshStandardMaterial color="#c49a56" metalness={0.88} roughness={0.3} />
           </mesh>
           <mesh geometry={geo.spout} castShadow>
             <meshStandardMaterial color="#d99468" metalness={0.9} roughness={0.28} />
@@ -279,6 +346,15 @@ function Kettle({ kettle, tilt }) {
             <sphereGeometry args={[0.06, 20, 16]} />
             <meshStandardMaterial color="#6b4630" roughness={0.5} />
           </mesh>
+          <mesh position={[-0.338, 0.56, -0.025]}>
+            <sphereGeometry args={[0.022, 12, 10]} />
+            <meshStandardMaterial color="#c49a56" metalness={0.88} roughness={0.3} />
+          </mesh>
+          <mesh position={[-0.444, 0.16, -0.025]}>
+            <sphereGeometry args={[0.022, 12, 10]} />
+            <meshStandardMaterial color="#c49a56" metalness={0.88} roughness={0.3} />
+          </mesh>
+          <BrandMark texture={brandTexture} color="#523a2e" position={[0, 0.36, -0.455]} rotationY={Math.PI} size={[0.27, 0.07]} />
         </group>
       </group>
     </group>
@@ -363,8 +439,10 @@ function Rig({ cupRef, glassRef, liquidRef, streamRef, streamMatRef, kettleRef, 
 
     // where on screen the cup should sit: follow the DOM anchor of each stage
     const names = ["hero", "story", "menu"];
-    const fa = anchorFrame(stage.anchors[names[i]], W, H);
-    const fb = anchorFrame(stage.anchors[names[i + 1]], W, H);
+    // Anchor measurements are refreshed by the scroll handler. Reading DOM layout
+    // here would force a synchronous layout on every WebGL frame.
+    const fa = stage.anchorFrames[names[i]] || anchorFrame(stage.anchors[names[i]], W, H);
+    const fb = stage.anchorFrames[names[i + 1]] || anchorFrame(stage.anchors[names[i + 1]], W, H);
     const ax = lerp(fa.x, fb.x, f), ay = lerp(fa.y, fb.y, f), ah = lerp(fa.h, fb.h, f);
     const zoom = clamp((H * 0.78) / ah, 0.9, 2.2);
 
@@ -441,6 +519,8 @@ function Rig({ cupRef, glassRef, liquidRef, streamRef, streamMatRef, kettleRef, 
 
 function Scene() {
   const lace = useLaceTexture();
+  const brandTexture = useBrandTexture();
+  const brandLetterTextures = useBrandLetterTextures();
   const latte = useLatteMaterial();
   const cup = useRef(), glass = useRef(), liquid = useRef(), stream = useRef(), streamMat = useRef(), light = useRef();
   const kettle = useRef(), tilt = useRef();
@@ -452,10 +532,10 @@ function Scene() {
 
   return (
     <>
-      <color attach="background" args={["#e9ede2"]} />
-      <fog attach="fog" args={["#e9ede2", 8, 18]} />
+      <color attach="background" args={["#aaa69b"]} />
+      <fog attach="fog" args={["#aaa69b", 8, 18]} />
 
-      <hemisphereLight args={["#fbf8ef", "#d3dac6", 0.95]} />
+      <hemisphereLight args={["#f3e8d6", "#747168", 1.05]} />
       <primitive object={lightTarget} position={[0, 0.35, 0]} />
       <spotLight
         ref={light}
@@ -467,7 +547,7 @@ function Scene() {
         decay={2}
         color="#ffd9ad"
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.0003}
         shadow-normalBias={0.02}
       />
@@ -477,7 +557,7 @@ function Scene() {
       <Environment resolution={256} environmentIntensity={0.7}>
         <mesh scale={50}>
           <sphereGeometry args={[1, 32, 16]} />
-          <meshBasicMaterial color="#dfe4d4" side={THREE.BackSide} />
+          <meshBasicMaterial color="#9d998f" side={THREE.BackSide} />
         </mesh>
         {[-1.2, -0.6, 0, 0.6, 1.2].map((y) => (
           <Lightformer key={y} form="rect" intensity={1.4} color="#fff1e4" position={[-5, 2 + y, 1]} rotation-y={Math.PI / 2} scale={[4, 0.32, 1]} />
@@ -487,7 +567,7 @@ function Scene() {
 
       <mesh rotation-x={-Math.PI / 2} receiveShadow>
         <planeGeometry args={[40, 40]} />
-        <meshStandardMaterial color="#efeadb" roughness={0.92} />
+        <meshStandardMaterial color="#aaa69a" roughness={0.92} />
       </mesh>
 
       <Petals />
@@ -505,6 +585,7 @@ function Scene() {
           <mesh geometry={geo.cup} castShadow receiveShadow>
             <meshPhysicalMaterial color="#fbf8f5" roughness={0.22} clearcoat={1} clearcoatRoughness={0.08} />
           </mesh>
+          <CupBrandMark textures={brandLetterTextures} />
           <mesh position={[0.6, 0.43, 0]} rotation-z={-Math.PI * 0.62} scale={[1, 1.15, 1]} castShadow>
             <torusGeometry args={[0.16, 0.045, 20, 48, Math.PI * 1.24]} />
             <meshPhysicalMaterial color="#fbf8f5" roughness={0.22} clearcoat={1} clearcoatRoughness={0.08} />
@@ -522,7 +603,7 @@ function Scene() {
         ))}
       </group>
 
-      <Kettle kettle={kettle} tilt={tilt} />
+      <Kettle kettle={kettle} tilt={tilt} brandTexture={brandTexture} />
       {/* the pour: a unit-height column, stretched every frame from spout to cup */}
       <mesh ref={stream}>
         <cylinderGeometry args={[0.02, 0.026, 1, 16, 1, true]} />
@@ -555,7 +636,7 @@ export default function CoffeeScene({ active }) {
       className="scene-canvas"
       frameloop={active ? "always" : "never"}
       shadows="percentage"
-      dpr={[1, 1.75]}
+      dpr={[1, 1.25]}
       camera={{ fov: 30, near: 0.1, far: 60, position: [3, 2.2, 3.4] }}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       aria-hidden="true"

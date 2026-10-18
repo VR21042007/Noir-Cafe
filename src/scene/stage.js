@@ -6,6 +6,7 @@ export const stage = {
   drink: 0, // index into DRINKS
   pointer: { x: 0, y: 0 },
   anchors: { hero: null, story: null, menu: null },
+  anchorFrames: {},
   reducedMotion: false,
 };
 

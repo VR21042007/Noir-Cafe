@@ -1,13 +1,13 @@
 :root {
-  --bg: #eef0e6; /* sage mist */
-  --surface: #f8f4ea; /* cream linen */
-  --line: rgba(31, 58, 48, 0.16);
-  --muted: #5f6f63; /* moss grey */
-  --text: #3a4d42; /* moss */
-  --heading: #1f3a30; /* bottle green */
-  --rose: #c9693f; /* apricot rose, the accent */
-  --rose-deep: #a9532f;
-  --gold: #b38a45;
+  --bg: #aaa69b; /* warm stone */
+  --surface: #d8d2c7; /* limestone */
+  --line: rgba(46, 46, 41, 0.22);
+  --muted: #55544e; /* graphite */
+  --text: #41413c;
+  --heading: #292b28; /* charcoal */
+  --rose: #9a603f; /* aged copper */
+  --rose-deep: #79492f;
+  --gold: #a8895d;
 
   --display: "Cormorant", "Cormorant Garamond", Garamond, Georgia, serif;
   --body: "Jost", "Futura", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
@@ -15,7 +15,7 @@
 
   --gutter: clamp(16px, 5vw, 80px);
 
-  color-scheme: light;
+  color-scheme: dark;
   font-family: var(--body);
   color: var(--text);
   background: var(--bg);
@@ -32,7 +32,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 img { display: block; width: 100%; }
 h1, h2, h3, p, figure, ol, ul, dl, dd { margin: 0; padding: 0; }
 ol, ul { list-style: none; }
-::selection { background: var(--rose); color: var(--bg); }
+::selection { background: var(--rose); color: #fff6ec; }
 :focus-visible { outline: 2px solid var(--rose); outline-offset: 4px; }
 
 @media (prefers-reduced-motion: reduce) {
