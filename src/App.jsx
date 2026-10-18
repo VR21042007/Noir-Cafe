@@ -1,5 +1,5 @@
 import { Component, Suspense, lazy, useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUpRight, Menu, ShoppingBag, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Coffee, Menu, ShoppingBag, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { stage } from "./scene/stage";
@@ -30,6 +30,23 @@ const drinks = [
   { name: "Golden Cold Brew", note: "Steeped for 18 hours, served over clear ice.", specs: ["300 ml", "18 h steep", "over ice"], price: "₹240" },
 ];
 
+const coffeeBases = [
+  { id: "espresso", label: "Espresso", detail: "Single origin · 1 shot", price: 190, tone: "#76503b" },
+  { id: "double", label: "Double espresso", detail: "Rich & balanced · 2 shots", price: 220, tone: "#58372b" },
+  { id: "cold-brew", label: "Cold brew", detail: "Slow-steeped for 18 hours", price: 240, tone: "#49342e" },
+];
+const milkChoices = [
+  { id: "whole", label: "Whole milk", price: 0 },
+  { id: "oat", label: "Oat milk", price: 30 },
+  { id: "none", label: "No milk", price: 0 },
+];
+const finishChoices = [
+  { id: "none", label: "Keep it simple", short: "", price: 0 },
+  { id: "vanilla", label: "Madagascar vanilla", short: "Vanilla", price: 25 },
+  { id: "cardamom", label: "Green cardamom", short: "Cardamom", price: 25 },
+  { id: "chocolate", label: "Dark chocolate", short: "Dark chocolate", price: 30 },
+];
+
 const navLinks = [["#home", "Home"], ["#menu", "Menu"], ["#menu", "Shop"], ["#visit", "Our locations"], ["#room", "About us"]];
 
 class SceneBoundary extends Component {
@@ -51,7 +68,22 @@ function App() {
   const [roomSlide, setRoomSlide] = useState(0);
   const [roomHovered, setRoomHovered] = useState(false);
   const [roomPaused, setRoomPaused] = useState(false);
+  const [cupBase, setCupBase] = useState("double");
+  const [cupMilk, setCupMilk] = useState("whole");
+  const [cupFinish, setCupFinish] = useState("cardamom");
   const progressRef = useRef(null);
+
+  const selectedBase = coffeeBases.find((option) => option.id === cupBase);
+  const selectedMilk = milkChoices.find((option) => option.id === cupMilk);
+  const selectedFinish = finishChoices.find((option) => option.id === cupFinish);
+  const cupPrice = selectedBase.price + selectedMilk.price + selectedFinish.price;
+  const cupTone = cupMilk === "none" ? selectedBase.tone : cupMilk === "oat" ? "#a47d59" : "#b98b67";
+  const cupName = cupBase === "cold-brew"
+    ? `${cupMilk !== "none" ? `${selectedMilk.label.replace(" milk", "")} ` : ""}cold brew${selectedFinish.short ? ` with ${selectedFinish.short.toLowerCase()}` : ""}`
+    : cupMilk === "none"
+      ? `${selectedFinish.short ? `${selectedFinish.short} ` : ""}${selectedBase.label}`
+      : `${selectedFinish.short ? `${selectedFinish.short} ` : ""}${cupMilk === "oat" ? "oat " : ""}${cupBase === "double" ? "flat white" : "NOIR latte"}`;
+  const cupDescription = [selectedBase.label, selectedMilk.label, selectedFinish.short && `${selectedFinish.short} finish`].filter(Boolean).join(" · ");
 
 
   useEffect(() => { stage.drink = drink; }, [drink]);
@@ -183,6 +215,7 @@ function App() {
           </div>
           <div className="stage-anchor hero-stage" ref={heroStage} />
           <a className="scroll-hint fade-in" href="#story"><ArrowDown size={15} /> Scroll to watch the pour</a>
+          <a className="hero-builder-link fade-in" href="#build"><Coffee size={17} strokeWidth={1.7} /> Build your cup <ArrowUpRight size={15} /></a>
         </section>
 
         <section className="weekly-special" aria-labelledby="weekly-special-title">
@@ -225,7 +258,10 @@ function App() {
           <div className="menu-head">
             <p className="kicker">The menu</p>
             <h2 id="menu-title">Made for sharing.</h2>
-            <p className="menu-aside">Ask at the counter for this week's single origin.</p>
+            <div className="menu-aside">
+              <p>Ask at the counter for this week&apos;s single origin.</p>
+              <a className="builder-jump" href="#build">Build your cup <ArrowDown size={14} /></a>
+            </div>
           </div>
           <div className="menu-body">
             <div className="stage-anchor menu-stage" ref={menuStage} />
@@ -241,6 +277,67 @@ function App() {
                 </li>
               ))}
             </ul>
+          </div>
+        </section>
+
+        <section className="cup-builder" id="build" aria-labelledby="builder-title">
+          <div className="builder-heading">
+            <div>
+              <p className="kicker">A little ritual, your way</p>
+              <h2 id="builder-title">Build your cup.</h2>
+            </div>
+            <p>Start with a NOIR favourite, then make it yours. Your cup changes as you choose.</p>
+          </div>
+          <div className="builder-layout">
+            <div className="builder-controls">
+              <fieldset>
+                <legend><span>01</span> Choose your coffee</legend>
+                <div className="builder-options">
+                  {coffeeBases.map((option) => (
+                    <button type="button" key={option.id} className={cupBase === option.id ? "builder-option is-selected" : "builder-option"} aria-pressed={cupBase === option.id} onClick={() => setCupBase(option.id)}>
+                      <span>{option.label}</span><small>{option.detail}</small>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend><span>02</span> Add your milk</legend>
+                <div className="builder-options builder-options-compact">
+                  {milkChoices.map((option) => (
+                    <button type="button" key={option.id} className={cupMilk === option.id ? "builder-option is-selected" : "builder-option"} aria-pressed={cupMilk === option.id} onClick={() => setCupMilk(option.id)}>
+                      <span>{option.label}</span><small>{option.price ? `+₹${option.price}` : "Included"}</small>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend><span>03</span> Choose a finish</legend>
+                <div className="builder-options builder-options-compact builder-finishes">
+                  {finishChoices.map((option) => (
+                    <button type="button" key={option.id} className={cupFinish === option.id ? "builder-option is-selected" : "builder-option"} aria-pressed={cupFinish === option.id} onClick={() => setCupFinish(option.id)}>
+                      <span>{option.label}</span><small>{option.price ? `+₹${option.price}` : "Included"}</small>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+            </div>
+            <div className="builder-preview" aria-live="polite">
+              <div className="builder-preview-label"><span>Your cup, composed</span><span>NOIR · 01</span></div>
+              <div className="builder-art" aria-hidden="true">
+                <div className="builder-steam" />
+                <div className="builder-cup-handle" />
+                <div className="builder-cup" style={{ "--cup-coffee": cupTone }}>
+                  <div className="builder-liquid"><span className={cupMilk === "none" ? "" : `builder-latte-art finish-${cupFinish}`} /></div>
+                  <span className="builder-cup-mark">N O I R</span>
+                </div>
+                <div className="builder-saucer" />
+              </div>
+              <div className="builder-result">
+                <div><h3>{cupName}</h3><p>{cupDescription}</p></div>
+                <strong>₹{cupPrice}</strong>
+              </div>
+              <p className="builder-footnote">A good place to start. Ask our barista to make it yours.</p>
+            </div>
           </div>
         </section>
 

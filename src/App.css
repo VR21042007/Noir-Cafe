@@ -58,6 +58,8 @@ h2 { font-size: clamp(40px, 5vw, 78px); line-height: 1; letter-spacing: -0.01em;
 @media (min-width: 901px) and (max-width: 1200px) { .hero-stage { margin-left: -20vw; } }
 .scroll-hint { position: absolute; left: var(--gutter); bottom: 30px; display: flex; align-items: center; gap: 10px; font-family: var(--body); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
 .scroll-hint svg { animation: nudge 2.4s ease-in-out infinite; }
+.hero-builder-link { position: absolute; right: var(--gutter); bottom: 20px; z-index: 3; display: inline-flex; align-items: center; gap: 10px; padding: 13px 17px; border: 1px solid var(--heading); background: var(--heading); color: var(--surface); font-size: 13px; letter-spacing: .06em; transition: background .2s, transform .2s; }
+.hero-builder-link:hover { background: var(--rose-deep); transform: translateY(-2px); }
 @keyframes nudge { 50% { transform: translateY(4px); } }
 
 /* ---------- weekly special ---------- */
@@ -104,6 +106,9 @@ h2 { font-size: clamp(40px, 5vw, 78px); line-height: 1; letter-spacing: -0.01em;
 .menu-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 12px 40px; margin-bottom: 56px; }
 .menu-head .kicker { grid-column: 1 / -1; }
 .menu-aside { max-width: 18em; font-size: 15px; color: var(--muted); text-align: right; }
+.menu-aside > p { margin-bottom: 10px; }
+.builder-jump { display: inline-flex; align-items: center; gap: 8px; color: var(--rose); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+.builder-jump svg { transform: rotate(-45deg); }
 .menu-body { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; gap: 48px; }
 .menu-stage { height: min(70svh, 680px); }
 .drinks { border-top: 1px solid var(--line); }
@@ -118,6 +123,42 @@ h2 { font-size: clamp(40px, 5vw, 78px); line-height: 1; letter-spacing: -0.01em;
 .drink-price { align-self: baseline; font-family: var(--display); font-size: 24px; font-weight: 500; color: var(--heading); }
 .drink-note { grid-column: 1 / -1; max-width: 32em; font-size: 16px; line-height: 1.5; }
 .drink-specs { grid-column: 1 / -1; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- build your cup ---------- */
+.cup-builder { position: relative; padding: 112px var(--gutter) 128px; background: var(--surface); border-top: 1px solid var(--line); }
+.builder-heading { display: flex; justify-content: space-between; align-items: end; gap: 32px; margin-bottom: 54px; }
+.builder-heading h2 { margin-top: 12px; }
+.builder-heading > p { max-width: 25em; color: var(--muted); font-size: 16px; line-height: 1.6; }
+.builder-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, 0.9fr); gap: clamp(44px, 8vw, 120px); align-items: stretch; }
+.builder-controls { display: grid; align-content: start; }
+.builder-controls fieldset { min-width: 0; margin: 0; padding: 24px 0; border: 0; border-top: 1px solid var(--line); }
+.builder-controls legend { width: 100%; margin-bottom: 16px; color: var(--heading); font-family: var(--display); font-size: 23px; }
+.builder-controls legend span { margin-right: 12px; color: var(--rose); font-family: var(--mono); font-size: 11px; letter-spacing: .13em; }
+.builder-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.builder-options-compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.builder-finishes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.builder-option { min-width: 0; min-height: 70px; padding: 12px 13px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 6px; text-align: left; border: 1px solid var(--line); background: rgba(255,255,255,.18); color: var(--text); transition: border-color .2s, background .2s, color .2s; }
+.builder-option:hover { border-color: var(--rose); }
+.builder-option.is-selected { border-color: var(--heading); background: var(--heading); color: var(--surface); }
+.builder-option span { font-size: 14px; line-height: 1.2; }
+.builder-option small { color: var(--muted); font-size: 11px; line-height: 1.35; }
+.builder-option.is-selected small { color: rgba(244,239,228,.7); }
+.builder-preview { min-width: 0; padding: 26px; display: flex; flex-direction: column; background: #1d3b2f; color: #f4efe4; }
+.builder-preview-label { display: flex; justify-content: space-between; color: rgba(244,239,228,.66); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+.builder-art { position: relative; display: grid; place-items: center; min-height: 260px; margin: 12px 0 18px; overflow: hidden; background: radial-gradient(ellipse at 50% 72%, rgba(211,183,136,.16), transparent 46%); }
+.builder-cup-handle { position: absolute; z-index: 1; width: 58px; height: 74px; margin: -13px 0 0 188px; border: 13px solid #eee8dc; border-left-color: transparent; border-radius: 50%; }
+.builder-cup { position: relative; z-index: 2; width: 180px; height: 140px; margin-top: -10px; overflow: hidden; border: 2px solid rgba(255,255,255,.8); border-radius: 13px 13px 56px 56px / 14px 14px 34px 34px; background: linear-gradient(100deg, #eee9de 0%, #fffdf5 46%, #d8d0c0 100%); box-shadow: 0 22px 32px rgba(0,0,0,.22), inset -8px 0 18px rgba(71,55,39,.12); }
+.builder-cup::before { content: ""; position: absolute; z-index: 2; top: -9px; left: -4px; width: calc(100% + 8px); height: 24px; border: 5px solid #fffdf5; border-radius: 50%; box-shadow: 0 2px 3px rgba(0,0,0,.22); }
+.builder-liquid { position: absolute; top: 4px; left: 5px; right: 5px; height: 19px; overflow: hidden; border-radius: 50%; background: radial-gradient(ellipse at 38% 25%, #ad7956, var(--cup-coffee) 72%); transition: background .3s; }
+.builder-latte-art { position: absolute; width: 34px; height: 10px; top: 3px; left: calc(50% - 17px); border-radius: 50%; background: rgba(247,239,221,.75); transform: rotate(-12deg); }
+.builder-cup-mark { position: absolute; top: 69px; left: 0; right: 0; color: #34443a; text-align: center; font-family: var(--display); font-size: 14px; font-weight: 600; letter-spacing: .2em; }
+.builder-saucer { position: absolute; bottom: 38px; width: 254px; height: 34px; border: 2px solid #d8c9ac; border-radius: 50%; background: linear-gradient(#fffdf5, #d8d0c0); box-shadow: 0 13px 19px rgba(0,0,0,.25); }
+.builder-steam { position: absolute; z-index: 0; width: 74px; height: 96px; top: 20px; background: radial-gradient(ellipse, rgba(244,239,228,.14), transparent 70%); filter: blur(8px); }
+.builder-result { display: flex; justify-content: space-between; align-items: start; gap: 16px; padding-top: 20px; border-top: 1px solid rgba(244,239,228,.22); }
+.builder-result h3 { margin: 0 0 5px; color: #f4efe4; font-family: var(--display); font-size: clamp(24px, 2.5vw, 34px); font-weight: 400; line-height: 1; }
+.builder-result p { color: rgba(244,239,228,.66); font-size: 12px; line-height: 1.5; }
+.builder-result strong { color: #e1bd83; font-family: var(--display); font-size: 24px; font-weight: 500; white-space: nowrap; }
+.builder-footnote { margin-top: 20px; color: rgba(244,239,228,.58); font-size: 12px; line-height: 1.5; }
 
 /* ---------- the room ---------- */
 .room { position: relative; background: var(--bg); }
@@ -192,6 +233,17 @@ h2 { font-size: clamp(40px, 5vw, 78px); line-height: 1; letter-spacing: -0.01em;
   .menu-aside { text-align: left; }
   .menu-body { grid-template-columns: 1fr; gap: 28px; }
   .menu-stage { height: 52svh; }
+
+  .cup-builder { padding: 84px var(--gutter) 92px; }
+  .builder-heading { display: block; margin-bottom: 34px; }
+  .builder-heading h2 { font-size: clamp(38px, 9vw, 58px); }
+  .builder-heading > p { margin-top: 16px; }
+  .builder-layout { grid-template-columns: 1fr; gap: 30px; }
+  .builder-preview { padding: 20px; }
+  .builder-art { min-height: 220px; }
+  .builder-cup-handle { margin-left: 168px; transform: scale(.86); }
+  .builder-cup { transform: scale(.88); }
+  .builder-saucer { transform: scale(.88); }
 
   .room-photo { height: 70svh; min-height: 380px; }
   .room-copy { margin-top: -18svh; padding-bottom: 100px; }
