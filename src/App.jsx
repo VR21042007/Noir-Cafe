@@ -156,7 +156,7 @@ function App() {
         <nav id="site-nav" className={menuOpen ? "nav-links open" : "nav-links"} aria-label="Main">
           {navLinks.map(([href, label]) => (
             <a key={label} className={label === "Shop" ? "nav-shop-link" : undefined} href={href} onClick={() => setMenuOpen(false)}>
-              {label === "Shop" && <ShoppingBag size={15} strokeWidth={1.7} aria-hidden="true" />}
+              {label === "Shop" && <ShoppingBag size={18} strokeWidth={1.7} aria-hidden="true" />}
               {label}
             </a>
           ))}
