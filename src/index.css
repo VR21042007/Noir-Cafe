@@ -1,13 +1,13 @@
 :root {
-  --bg: #aaa69b; /* warm stone */
-  --surface: #d8d2c7; /* limestone */
-  --line: rgba(46, 46, 41, 0.22);
-  --muted: #55544e; /* graphite */
-  --text: #41413c;
-  --heading: #292b28; /* charcoal */
-  --rose: #9a603f; /* aged copper */
-  --rose-deep: #79492f;
-  --gold: #a8895d;
+  --bg: #e9e1d0; /* warm beige */
+  --surface: #f4efe4; /* parchment */
+  --line: rgba(29, 59, 47, 0.18);
+  --muted: #5f6a5a; /* sage grey */
+  --text: #34443a;
+  --heading: #1d3b2f; /* deep forest green */
+  --rose: #3f6a51; /* fern green, the accent */
+  --rose-deep: #2c4f3b;
+  --gold: #a8834a;
 
   --display: "Cormorant", "Cormorant Garamond", Garamond, Georgia, serif;
   --body: "Jost", "Futura", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
@@ -15,7 +15,7 @@
 
   --gutter: clamp(16px, 5vw, 80px);
 
-  color-scheme: dark;
+  color-scheme: light;
   font-family: var(--body);
   color: var(--text);
   background: var(--bg);

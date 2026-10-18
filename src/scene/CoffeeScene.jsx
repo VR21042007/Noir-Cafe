@@ -296,7 +296,7 @@ const PETALS = (() => {
     return { x: Math.cos(a) * r, z: Math.sin(a) * r, ry: rand() * Math.PI * 2, tilt: (rand() - 0.5) * 0.3, s: 0.8 + rand() * 0.5, c: Math.floor(rand() * 3) };
   });
 })();
-const PETAL_COLORS = ["#e59a6e", "#f3c6a4", "#9a2f3d"];
+const PETAL_COLORS = ["#4f6f4c", "#86a074", "#c2ad80"];
 
 function Petals() {
   const ref = useRef();
@@ -532,10 +532,10 @@ function Scene() {
 
   return (
     <>
-      <color attach="background" args={["#aaa69b"]} />
-      <fog attach="fog" args={["#aaa69b", 8, 18]} />
+      <color attach="background" args={["#e4dccb"]} />
+      <fog attach="fog" args={["#e4dccb", 8, 18]} />
 
-      <hemisphereLight args={["#f3e8d6", "#747168", 1.05]} />
+      <hemisphereLight args={["#fbf6ec", "#b9b49d", 1.0]} />
       <primitive object={lightTarget} position={[0, 0.35, 0]} />
       <spotLight
         ref={light}
@@ -557,7 +557,7 @@ function Scene() {
       <Environment resolution={256} environmentIntensity={0.7}>
         <mesh scale={50}>
           <sphereGeometry args={[1, 32, 16]} />
-          <meshBasicMaterial color="#9d998f" side={THREE.BackSide} />
+          <meshBasicMaterial color="#d6cfbc" side={THREE.BackSide} />
         </mesh>
         {[-1.2, -0.6, 0, 0.6, 1.2].map((y) => (
           <Lightformer key={y} form="rect" intensity={1.4} color="#fff1e4" position={[-5, 2 + y, 1]} rotation-y={Math.PI / 2} scale={[4, 0.32, 1]} />
@@ -567,7 +567,7 @@ function Scene() {
 
       <mesh rotation-x={-Math.PI / 2} receiveShadow>
         <planeGeometry args={[40, 40]} />
-        <meshStandardMaterial color="#aaa69a" roughness={0.92} />
+        <meshStandardMaterial color="#ddd3bf" roughness={0.92} />
       </mesh>
 
       <Petals />
