@@ -1,5 +1,5 @@
 import { Component, Suspense, lazy, useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUpRight, Coffee, Menu, ShoppingBag, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Coffee, Laptop, Menu, MessageCircle, Moon, ShoppingBag, Sparkles, X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { stage } from "./scene/stage";
@@ -47,6 +47,19 @@ const finishChoices = [
   { id: "chocolate", label: "Dark chocolate", short: "Dark chocolate", price: 30 },
 ];
 
+const moments = [
+  { id: "pause", label: "A quiet pause", icon: Moon, title: "Let the day slow down.", detail: "A window seat, something warm, and nowhere else you need to be.", action: "Build a cup for this moment", href: "#build" },
+  { id: "work", label: "Work side by side", icon: Laptop, title: "Good ideas, better company.", detail: "Settle in together, find your rhythm, and let the coffee keep pace.", action: "Find your table for two", href: "#visit" },
+  { id: "talk", label: "A long conversation", icon: MessageCircle, title: "Stay for one more story.", detail: "Two cups on the table. The afternoon can wait a little longer.", action: "Make it a date", href: "#visit" },
+];
+
+const coffeeFavourites = [
+  { name: "South Indian filter coffee", tag: "A timeless Indian ritual", image: "https://images.unsplash.com/photo-1757918391899-1341f7b285fb?auto=format&fit=crop&fm=jpg&q=80&w=480", alt: "South Indian filter coffee in a frothy steel tumbler, photographed in Hyderabad" },
+  { name: "Cappuccino", tag: "A café classic", image: "https://images.unsplash.com/photo-1522210338192-67c5905429d6?auto=format&fit=crop&w=240&q=80", alt: "Cappuccino with latte art in a ceramic cup" },
+  { name: "Cold coffee", tag: "A chilled favourite", image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=240&q=80", alt: "Iced coffee served in a glass" },
+  { name: "Cold brew", tag: "Slow-steeped and smooth", image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=240&q=80", alt: "A cold coffee drink served over ice" },
+];
+
 const navLinks = [["#home", "Home"], ["#menu", "Menu"], ["#menu", "Shop"], ["#visit", "Our locations"], ["#room", "About us"]];
 
 class SceneBoundary extends Component {
@@ -67,7 +80,8 @@ function App() {
   const [sceneActive, setSceneActive] = useState(true);
   const [roomSlide, setRoomSlide] = useState(0);
   const [roomHovered, setRoomHovered] = useState(false);
-  const [roomPaused, setRoomPaused] = useState(false);
+  const [selectedMoment, setSelectedMoment] = useState("pause");
+  const [favouritesOpen, setFavouritesOpen] = useState(false);
   const [cupBase, setCupBase] = useState("double");
   const [cupMilk, setCupMilk] = useState("whole");
   const [cupFinish, setCupFinish] = useState("cardamom");
@@ -84,6 +98,7 @@ function App() {
       ? `${selectedFinish.short ? `${selectedFinish.short} ` : ""}${selectedBase.label}`
       : `${selectedFinish.short ? `${selectedFinish.short} ` : ""}${cupMilk === "oat" ? "oat " : ""}${cupBase === "double" ? "flat white" : "NOIR latte"}`;
   const cupDescription = [selectedBase.label, selectedMilk.label, selectedFinish.short && `${selectedFinish.short} finish`].filter(Boolean).join(" · ");
+  const activeMoment = moments.find((moment) => moment.id === selectedMoment);
 
 
   useEffect(() => { stage.drink = drink; }, [drink]);
@@ -164,10 +179,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (roomHovered || roomPaused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (roomHovered || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const timer = window.setInterval(() => setRoomSlide((current) => (current + 1) % roomSlides.length), 6500);
     return () => window.clearInterval(timer);
-  }, [roomHovered, roomPaused]);
+  }, [roomHovered]);
 
 
   return (
@@ -231,6 +246,35 @@ function App() {
           <div className="weekly-special-action">
             <span className="weekly-special-price">₹260</span>
             <a href="#menu">Explore the menu <ArrowRight size={15} /></a>
+          </div>
+        </section>
+
+        <section className="moment-picker" aria-labelledby="moment-title">
+          <div className="moment-intro">
+            <p className="kicker">A little more personal</p>
+            <h2 id="moment-title">What brings you to NOIR today?</h2>
+            <p>Pick a moment. We&apos;ll help make room for it.</p>
+          </div>
+          <div className="moment-content">
+            <div className="moment-options" role="group" aria-label="Choose your moment">
+              {moments.map((moment) => {
+                const Icon = moment.icon;
+                return (
+                  <button key={moment.id} type="button" className={selectedMoment === moment.id ? "moment-option is-selected" : "moment-option"} aria-pressed={selectedMoment === moment.id} onClick={() => setSelectedMoment(moment.id)}>
+                    <Icon size={18} strokeWidth={1.6} aria-hidden="true" />
+                    <span>{moment.label}</span>
+                    <ArrowRight size={15} aria-hidden="true" />
+                  </button>
+                );
+              })}
+            </div>
+            <div className={`moment-card moment-${activeMoment.id}`} aria-live="polite">
+              <span className="moment-card-mark" aria-hidden="true"><Coffee size={24} strokeWidth={1.3} /></span>
+              <p className="kicker">Your NOIR moment</p>
+              <h3>{activeMoment.title}</h3>
+              <p>{activeMoment.detail}</p>
+              <a href={activeMoment.href}>{activeMoment.action} <ArrowUpRight size={15} /></a>
+            </div>
           </div>
         </section>
 
@@ -378,6 +422,36 @@ function App() {
         <a href="https://instagram.com/" target="_blank" rel="noreferrer">Instagram <ArrowUpRight size={14} /></a>
         <small className="mono">© 2026 NOIR · Concept website</small>
       </footer>
+
+      <aside className="favourites-panel" id="coffee-favourites-panel" role="dialog" aria-label="India’s coffee favourites" hidden={!favouritesOpen}>
+          <div className="favourites-panel-head">
+            <div><p className="kicker">A cup for every kind of day</p><h2>India&apos;s coffee favourites</h2></div>
+            <button type="button" className="favourites-close" onClick={() => setFavouritesOpen(false)} aria-label="Close coffee favourites"><X size={20} /></button>
+          </div>
+          <p className="favourites-intro">A few much-loved coffee styles from across the café table.</p>
+          <ul className="favourites-list">
+            {coffeeFavourites.map((favourite) => (
+              <li key={favourite.name}>
+                <img src={favourite.image} alt={favourite.alt} loading="lazy" />
+                <div><h3>{favourite.name}</h3><p>{favourite.tag}</p></div>
+                <ArrowUpRight size={15} aria-hidden="true" />
+              </li>
+            ))}
+          </ul>
+          <a className="favourites-menu-link" href="#menu" onClick={() => setFavouritesOpen(false)}>Explore the NOIR menu <ArrowRight size={15} /></a>
+      </aside>
+      <button
+        type="button"
+        className={favouritesOpen ? "favourites-trigger is-open" : "favourites-trigger"}
+        aria-label={favouritesOpen ? "Close coffee favourites" : "Explore coffee favourites from across India"}
+        title={favouritesOpen ? "Close coffee favourites" : "Coffee favourites"}
+        aria-expanded={favouritesOpen}
+        aria-controls="coffee-favourites-panel"
+        onClick={() => setFavouritesOpen((open) => !open)}
+      >
+        {favouritesOpen ? <X size={21} /> : <><Coffee size={20} strokeWidth={1.7} /><Sparkles className="favourites-sparkle" size={12} strokeWidth={1.8} /></>}
+        <span>{favouritesOpen ? "Close" : "Coffee favourites"}</span>
+      </button>
     </div>
   );
 }
